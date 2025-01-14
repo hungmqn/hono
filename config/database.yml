@@ -19,11 +19,18 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-
 development:
   <<: *default
-  database: hono_development
+  # database: hono_development
 
+  port: <%= ENV["DATABASE_PORT"] || '5432' %>
+  host: <%= ENV["DATABASE_HOST"] || 'localhost' %>
+  database: <%= ENV["DATABASE_NAME"] || 'hono_development' %>
+  pool: 5
+  username: <%= ENV["DATABASE_USR"] %>
+  password: <%= ENV["DATABASE_PWD"] %>
+  variables:
+    statement_timeout: <%= ENV['DATABASE_STATEMENT_TIMEOUT'] || 60 * 1000 %>
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
   # When left blank, PostgreSQL will use the default role. This is
@@ -56,7 +63,16 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: hono_test
+  # database: hono_test
+
+  port: <%= ENV["DATABASE_PORT"] || '5432' %>
+  database: <%= ENV['DATABASE_NAME'] || 'hono_test' %><%= ENV['TEST_ENV_NUMBER'] %>
+  pool: 5
+  host: <%= ENV["DATABASE_HOST"] || 'localhost' %>
+  username: <%= ENV["DATABASE_USR"] %>
+  password: <%= ENV["DATABASE_PWD"] %>
+  variables:
+    statement_timeout: <%= ENV['DATABASE_STATEMENT_TIMEOUT'] || 60 * 1000 %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -80,6 +96,11 @@ test:
 #
 production:
   <<: *default
-  database: hono_production
-  username: hono
-  password: <%= ENV["HONO_DATABASE_PASSWORD"] %>
+  # database: hono_production
+  # username: hono
+  # password: <%= ENV["HONO_DATABASE_PASSWORD"] %>
+  prepared_statements: false
+  url: <%= ENV["DATABASE_URL"] %>
+  pool: <%= ENV["DATABASE_POOL"] || 15 %>
+  variables:
+    statement_timeout: <%= ENV['DATABASE_STATEMENT_TIMEOUT'] || 60 * 1000 %>
